@@ -5,7 +5,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
 // Proxy server URL (Replace with the actual URL where sound data is coming from)
-$proxyServerUrl = 'https://aquasense.online/dashboard/admin/controller/soundDevice.php';
+$proxyServerUrl = 'https://silentguard.site/dashboard/admin/controller/soundDevice.php';
 
 // Fetch data from the proxy server
 $response = file_get_contents($proxyServerUrl);
