@@ -147,9 +147,9 @@ am5.ready(function () {
                     var soundDevice3 = data.find(device => device.DeviceID === "DEVICE3")?.dbValue || "N/A";
         
                     // Update UI elements
-                    document.getElementById('soundDevice1').textContent = soundDevice1 + " dB";
-                    document.getElementById('soundDevice2').textContent = soundDevice2 + " dB";
-                    document.getElementById('soundDevice3').textContent = soundDevice3 + " dB";
+                    document.getElementById('soundDevice1').textContent = soundDevice1 + " dBa";
+                    document.getElementById('soundDevice2').textContent = soundDevice2 + " dBa";
+                    document.getElementById('soundDevice3').textContent = soundDevice3 + " dBa";
         
                     // Call functions to process the values if necessary
                     SoundSensorDevice1Update(soundDevice1);
