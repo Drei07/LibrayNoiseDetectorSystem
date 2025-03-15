@@ -1923,11 +1923,12 @@ border-right-color: var(--main);
 	display: flex;
 	flex-direction: column;
 	justify-content: center;
-	align-items: flex-start;
+	align-items: center;
 }
 
 .gauge_dashboard .status .arduino .sensor-data span{
-	font-size: 20px;
+	font-size: 35px;
+	font-weight: bolder;
 
 }
 
@@ -1953,7 +1954,10 @@ border-right-color: var(--main);
   .sensor-label {
 	margin: 0 10px;
   }
-  
+   .high-sound{
+	box-shadow: 0px 0px 10px 0px #ff00185e;
+	color: var(--red);
+  }
 
 .gauge_dashboard .status .time{
 	display: flex;

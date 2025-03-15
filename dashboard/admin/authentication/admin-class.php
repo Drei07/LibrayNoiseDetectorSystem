@@ -179,7 +179,7 @@ public function mainUrl(){
   unset($_SESSION['adminSession']);
 
   $_SESSION['status_title'] = 'Logout!';
-  $_SESSION['status'] = 'Thank you for using Plant Support';
+  $_SESSION['status'] = 'Thank you for using SilentGuard';
   $_SESSION['status_code'] = 'success';
   $_SESSION['status_timer'] = 40000;    
   header('Location: ../../../');
@@ -205,8 +205,8 @@ public function mainUrl(){
   $mail->SetFrom($smtp_email, $system_name);
   $mail->Subject    = $subject;
   $mail->MsgHTML($message);
-  $imagePath = __DIR__ . '/../../../src/img/plant-support-logo.png';
-  $mail->AddEmbeddedImage($imagePath, 'logo', 'logo.png');
+  $imagePath = __DIR__ . '/../../../src/img/sound_wave.png';
+  $mail->AddEmbeddedImage($imagePath, 'logo', 'silentguard.png');
   $mail->Send();
  } 
 }

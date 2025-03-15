@@ -29,7 +29,7 @@ am5.ready(function () {
     var SoundSensorDevice1xAxis = SoundSensorDevice1chart.xAxes.push(am5xy.ValueAxis.new(SoundSensorDevice1Gauge, {
         maxDeviation: 0,
         min: 0,
-        max: 120,
+        max: 140,
         strictMinMax: true,
         renderer: SoundSensorDevice1axisRenderer
     }));
@@ -135,34 +135,111 @@ am5.ready(function () {
             xhr.send();
         }
 
+        // Retrieve lastSoundStatus from localStorage or initialize it
+        var lastSoundStatus = JSON.parse(localStorage.getItem("lastSoundStatus")) || {
+            DEVICE1: 0,
+            DEVICE2: 0,
+            DEVICE3: 0
+        };
+
         function SoundSensorDevice1LevelFetchData() {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
                     var data = JSON.parse(xhr.responseText);
-        
+
                     // Extract dB values per device
-                    var soundDevice1 = data.find(device => device.DeviceID === "DEVICE1")?.dbValue || "N/A";
-                    var soundDevice2 = data.find(device => device.DeviceID === "DEVICE2")?.dbValue || "N/A";
-                    var soundDevice3 = data.find(device => device.DeviceID === "DEVICE3")?.dbValue || "N/A";
-        
+                    var soundDevice1 = data.find(device => device.DeviceID === "DEVICE1")?.dbValue || 0;
+                    var soundDevice2 = data.find(device => device.DeviceID === "DEVICE2")?.dbValue || 0;
+                    var soundDevice3 = data.find(device => device.DeviceID === "DEVICE3")?.dbValue || 0;
+
+                    // Extract Status values per device
+                    var soundStatus1 = data.find(device => device.DeviceID === "DEVICE1")?.soundStatus;
+                    var soundStatus2 = data.find(device => device.DeviceID === "DEVICE2")?.soundStatus;
+                    var soundStatus3 = data.find(device => device.DeviceID === "DEVICE3")?.soundStatus;
+
                     // Update UI elements
                     document.getElementById('soundDevice1').textContent = soundDevice1 + " dBa";
                     document.getElementById('soundDevice2').textContent = soundDevice2 + " dBa";
                     document.getElementById('soundDevice3').textContent = soundDevice3 + " dBa";
-        
+
+                    document.getElementById('soundStatus1').textContent =
+                        soundDevice1 === 0 ? "DEVICE IS OFF" :
+                            (soundDevice1 >= 90 ? "MAX SOUND REACH" : "NORMAL");
+
+                    document.getElementById('soundStatus2').textContent =
+                        soundDevice2 === 0 ? "DEVICE IS OFF" :
+                            (soundDevice2 >= 90 ? "MAX SOUND REACH" : "NORMAL");
+
+                    document.getElementById('soundStatus3').textContent =
+                        soundDevice3 === 0 ? "DEVICE IS OFF" :
+                            (soundDevice3 >= 90 ? "MAX SOUND REACH" : "NORMAL");
+
+                    // Apply red border if sound is >= 120 dBa
+                    toggleRedBorder("soundSensor1Card", soundDevice1);
+                    toggleRedBorder("soundSensor2Card", soundDevice2);
+                    toggleRedBorder("soundSensor3Card", soundDevice3);
+
+                    // Check if soundStatus transitioned from 0 to 1
+                    if (soundStatus1 === 1 && lastSoundStatus["DEVICE1"] === 0) {
+                        sendMaxSoundAlert("DEVICE1", soundDevice1);
+                    }
+                    if (soundStatus2 === 1 && lastSoundStatus["DEVICE2"] === 0) {
+                        sendMaxSoundAlert("DEVICE2", soundDevice2);
+                    }
+                    if (soundStatus3 === 1 && lastSoundStatus["DEVICE3"] === 0) {
+                        sendMaxSoundAlert("DEVICE3", soundDevice3);
+                    }
+
+                    // Update last known status and store it in localStorage
+                    lastSoundStatus["DEVICE1"] = soundStatus1;
+                    lastSoundStatus["DEVICE2"] = soundStatus2;
+                    lastSoundStatus["DEVICE3"] = soundStatus3;
+                    localStorage.setItem("lastSoundStatus", JSON.stringify(lastSoundStatus));
+
                     // Call functions to process the values if necessary
                     SoundSensorDevice1Update(soundDevice1);
                     SoundSensorDevice2Update(soundDevice2);
                     SoundSensorDevice3Update(soundDevice3);
+                    updateSoundSensorStatus();
                 }
             };
-        
+
             xhr.open('POST', 'controller/receive_data.php', true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify({}));
         }
-        
+
+        // Function to toggle red border based on sound level
+        function toggleRedBorder(sensorCardId, soundLevel) {
+            var sensorCard = document.getElementById(sensorCardId);
+            if (sensorCard) {
+                if (soundLevel >= 90) {
+                    sensorCard.classList.add("high-sound"); // Add red border
+                } else {
+                    sensorCard.classList.remove("high-sound"); // Remove red border
+                }
+            }
+        }
+
+        // Function to send alert when max sound is reached
+        function sendMaxSoundAlert(deviceID, dbValue) {
+            var xhr = new XMLHttpRequest();
+            xhr.open("POST", "controller/sensor-controller.php", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+
+            var data = JSON.stringify({
+                action: "storeAndNotify",
+                DeviceID: deviceID,
+                dbValue: dbValue,
+                soundStatus: 1
+            });
+
+            xhr.send(data);
+        }
+
+
+
         // Initial fetch and setup for periodic updates
         SoundSensorDevice1LevelFetchData();
         setInterval(SoundSensorDevice1LevelFetchData, 500);
@@ -199,13 +276,18 @@ am5.ready(function () {
         lowScore: 80,
         highScore: 100
     }, {
-        title: "Extremely Loud",
+        title: "Too Loud",
         color: "#f02222", // Red
         lowScore: 100,
         highScore: 120
+    }, {
+        title: "Super Loud",
+        color: "#c70039", // Red
+        lowScore: 120,
+        highScore: 140
     }];
-    
-    
+
+
 
     am5.array.each(SoundSensorDevice1bandsData, function (data) {
         var range = SoundSensorDevice1xAxis.createAxisRange(SoundSensorDevice1xAxis.makeDataItem({}));
@@ -261,7 +343,7 @@ am5.ready(function () {
     var SoundSensorDevice2xAxis = SoundSensorDevice2chart.xAxes.push(am5xy.ValueAxis.new(SoundSensorDevice2Gauge, {
         maxDeviation: 0,
         min: 0,
-        max: 120,
+        max: 140,
         strictMinMax: true,
         renderer: SoundSensorDevice2axisRenderer
     }));
@@ -372,11 +454,17 @@ am5.ready(function () {
         lowScore: 80,
         highScore: 100
     }, {
-        title: "Extremely Loud",
+        title: "Too Loud",
         color: "#f02222", // Red
         lowScore: 100,
         highScore: 120
+    }, {
+        title: "Super Loud",
+        color: "#c70039", // Red
+        lowScore: 120,
+        highScore: 140
     }];
+
 
     am5.array.each(SoundSensorDevice2bandsData, function (data) {
         var range = SoundSensorDevice2xAxis.createAxisRange(SoundSensorDevice2xAxis.makeDataItem({}));
@@ -432,7 +520,7 @@ am5.ready(function () {
     var SoundSensorDevice3xAxis = SoundSensorDevice3chart.xAxes.push(am5xy.ValueAxis.new(SoundSensorDevice3Gauge, {
         maxDeviation: 0,
         min: 0,
-        max: 120,
+        max: 140,
         strictMinMax: true,
         renderer: SoundSensorDevice3axisRenderer
     }));
@@ -543,11 +631,17 @@ am5.ready(function () {
         lowScore: 80,
         highScore: 100
     }, {
-        title: "Extremely Loud",
+        title: "Too Loud",
         color: "#f02222", // Red
         lowScore: 100,
         highScore: 120
+    }, {
+        title: "Super Loud",
+        color: "#c70039", // Red
+        lowScore: 120,
+        highScore: 140
     }];
+
 
     am5.array.each(SoundSensorDevice3bandsData, function (data) {
         var range = SoundSensorDevice3xAxis.createAxisRange(SoundSensorDevice3xAxis.makeDataItem({}));

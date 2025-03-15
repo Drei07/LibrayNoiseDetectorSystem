@@ -32,7 +32,7 @@ else
     $start = 0;
 }
 
-$query = "SELECT * FROM sensor_logs";
+$query = "SELECT * FROM noise_alerts_logs";
 
 $output = '';
 if($_POST['query'] != '') {
@@ -41,9 +41,9 @@ if($_POST['query'] != '') {
     $formatted_date = date("F j, Y", strtotime($search_term)); // Convert the search term to date format
 
     // Modify the query to search by email, activity, or formatted created_at date
-    $query .= ' WHERE sensor LIKE "%'.str_replace(' ', '%', $search_term).'%" 
-                OR status LIKE "%'.str_replace(' ', '%', $search_term).'%" 
-                OR DATE_FORMAT(sensor_logs.created_at, "%M %e, %Y") LIKE "%'.str_replace(' ', '%', $formatted_date).'%"';
+    $query .= ' WHERE DeviceId LIKE "%'.str_replace(' ', '%', $search_term).'%" 
+                OR dbValue LIKE "%'.str_replace(' ', '%', $search_term).'%" 
+                OR DATE_FORMAT(noise_alerts_logs.created_at, "%M %e, %Y") LIKE "%'.str_replace(' ', '%', $formatted_date).'%"';
 }
 
 $query .= ' ORDER BY id DESC ';
@@ -68,8 +68,8 @@ if($total_data > 0)
         </div>
         <thead>
             <th>#</th>
-            <th>SENSOR</th>
-            <th>STATUS</th>
+            <th>DEVICE ID</th>
+            <th>DbA VALUE</th>
             <th>LOG DATE</th>
         </thead>
     ';
@@ -80,8 +80,8 @@ if($total_data > 0)
         $output .= '
         <tr>
             <td>'.$row["id"].'</td>
-            <td>'.$row["sensor"].'</td>
-            <td>'.$row["status"].'</td>
+            <td>'.$row["DeviceId"].'</td>
+            <td>'.$row["dbValue"].' DbA</td>
             <td>'.date("F j, Y (h:i A)", strtotime($row['created_at'])).'</td>
             </tr>
         ';

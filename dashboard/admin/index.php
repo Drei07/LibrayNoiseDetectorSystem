@@ -60,27 +60,30 @@ include_once 'header.php';
 			</div>
 			<ul class="dashboard_data">
 				<div class="gauge_dashboard">
-					<div class="status">
-						<div class="card arduino">
+					<div class="status" >
+						<div class="card arduino" id="soundSensor1Card">
 							<h1>SOUND SENSOR 1 STATUS</h1>
 							<div class="sensor-data">
 								<span id="soundDevice1">Loading...</span>
+								<p id="soundStatus1"></p>
 							</div>
 						</div>
 					</div>
 					<div class="status">
-						<div class="card arduino">
+						<div class="card arduino" id="soundSensor2Card">
 							<h1>SOUND SENSOR 2 STATUS</h1>
 							<div class="sensor-data">
 								<span id="soundDevice2">Loading...</span>
+								<p id="soundStatus2"></p>
 							</div>
 						</div>
 					</div>
 					<div class="status">
-						<div class="card arduino">
+						<div class="card arduino" id="soundSensor3Card">
 							<h1>SOUND SENSOR 3 STATUS</h1>
 							<div class="sensor-data">
 								<span id="soundDevice3">Loading...</span>
+								<p id="soundStatus3"></p>
 							</div>
 						</div>
 					</div>

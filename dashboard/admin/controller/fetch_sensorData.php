@@ -19,7 +19,7 @@ class Sensor
     public function getSensorData()
     {
         // Fetch maxSound, resetInterval, and cooldownPeriod from sensors table
-        $query = 'SELECT maxSound, resetInterval, cooldownPeriod FROM sensors LIMIT 1';
+        $query = 'SELECT maxSound, maxCount resetInterval, cooldownPeriod FROM sensors LIMIT 1';
         $stmt = $this->conn->prepare($query);
 
         if ($stmt->execute()) {
@@ -30,6 +30,7 @@ class Sensor
             // Prepare the selected sensor data
             $result = [
                 "maxSound" => $sensorData['maxSound'],
+                "maxCount" => $sensorData['maxCount'],
                 "resetInterval" => $sensorData['resetInterval'],
                 "cooldownPeriod" => $sensorData['cooldownPeriod']
             ];
